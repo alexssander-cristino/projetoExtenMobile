@@ -419,7 +419,7 @@ class PrescriptionPage extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-              const Text('Calculo detalhado (transparência):', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Calculos detalhado (transparência):', style: TextStyle(fontWeight: FontWeight.bold)),
               Text('ISF = 1700 / TDD = ${result.isf} (1U reduz ~${result.isf} mg/dL)'),
               Text('Basal = 50% * TDD = ${result.basalUnits} U/dia'),
               Text('Prandial total = TDD - basal = ${(result.recommendedTDD - result.basalUnits).toStringAsFixed(1)} U (dividido em 3 refeições = ${result.prandialUnits} U/refeição)'),
