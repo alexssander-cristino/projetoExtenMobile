@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; 
+import 'dart:math';
+import '../widgets/navbar.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -135,6 +136,7 @@ class _CadastroPageState extends State<CadastroPage> {
           ),
         ),
       ),
+      bottomNavigationBar: const NavBar(selectedIndex: 1), // 👈 Adiciona a NavBar
     );
   }
 }
