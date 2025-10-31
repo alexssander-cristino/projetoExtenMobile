@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../widgets/navbar.dart'; // seu arquivo
+// (ajuste o caminho se estiver diferente)
 
 class ProtocoloPage extends StatelessWidget {
   const ProtocoloPage({super.key});
@@ -60,6 +62,7 @@ class ProtocoloPage extends StatelessWidget {
           ),
         ],
       ),
+      bottomNavigationBar: const NavBar(selectedIndex: 3), // 👈 destaque do item atual
     );
   }
 }

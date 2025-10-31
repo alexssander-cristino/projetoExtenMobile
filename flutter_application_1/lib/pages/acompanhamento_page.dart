@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/navbar.dart';
 
 class AcompanhamentoPage extends StatefulWidget {
   const AcompanhamentoPage({super.key});
@@ -74,6 +75,8 @@ class _AcompanhamentoPageState extends State<AcompanhamentoPage> {
           ],
         ),
       ),
+      // 👇 adiciona a barra de navegação inferior
+      bottomNavigationBar: const NavBar(selectedIndex: 5),
     );
   }
 }
