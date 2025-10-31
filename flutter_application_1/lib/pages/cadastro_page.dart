@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:math'; 
+import '../widgets/navbar.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
@@ -13,128 +13,71 @@ class _CadastroPageState extends State<CadastroPage> {
   final _nameController = TextEditingController();
   final _prontuarioController = TextEditingController();
   final _weightController = TextEditingController();
-  final _creatininaController = TextEditingController();
-  final _idadeController = TextEditingController();
 
-  bool _isCorticoide = false;
-  bool _isMulher = false;
-  String? _escalaDispositivo;
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _prontuarioController.dispose();
+    _weightController.dispose();
+    super.dispose();
+  }
 
-  double calcularTFG(double scr, int idade, bool mulher) {
-    const double kappa = 0.7;
-    const double alfaMulher = -0.241;
-    const double alfaHomem = -0.302;
-
-    double minScr = scr / kappa;
-    double maxScr = scr / kappa;
-
-    double tfg = 142 *
-        (minScr < 1 ? pow(minScr, mulher ? alfaMulher : alfaHomem) : 1) *
-        (maxScr > 1 ? pow(maxScr, -1.200) : 1) *
-        pow(0.9938, idade) *
-        (mulher ? 1.012 : 1.0);
-
-    return tfg;
+  void _goToNextStep() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.pushNamed(context, '/classificacao');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Cadastro do Paciente')),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Nome'),
-                validator: (v) =>
-                    v == null || v.isEmpty ? 'Informe o nome' : null,
+                decoration: const InputDecoration(
+                  labelText: 'Nome completo',
+                  prefixIcon: Icon(Icons.person),
+                ),
+                validator: (v) => v == null || v.isEmpty ? 'Informe o nome' : null,
               ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _prontuarioController,
-                decoration:
-                    const InputDecoration(labelText: 'Prontuário / CPF'),
+                decoration: const InputDecoration(
+                  labelText: 'Prontuário / CPF',
+                  prefixIcon: Icon(Icons.assignment_ind),
+                ),
               ),
-              TextFormField(
-                controller: _idadeController,
-                decoration: const InputDecoration(labelText: 'Idade'),
-                keyboardType: TextInputType.number,
-              ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _weightController,
-                decoration: const InputDecoration(labelText: 'Peso (kg)'),
-                keyboardType: TextInputType.number,
-              ),
-              SwitchListTile(
-                title: const Text('Sexo feminino?'),
-                value: _isMulher,
-                onChanged: (v) => setState(() => _isMulher = v),
-              ),
-              SwitchListTile(
-                title: const Text(
-                    'Paciente em uso de corticoide? (Insulino-resistente)'),
-                value: _isCorticoide,
-                onChanged: (v) => setState(() => _isCorticoide = v),
-              ),
-              TextFormField(
-                controller: _creatininaController,
                 decoration: const InputDecoration(
-                    labelText: 'Creatinina sérica (mg/dL)'),
-                keyboardType: TextInputType.number,
-              ),
-              DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'Escala do dispositivo de insulina',
+                  labelText: 'Peso (kg)',
+                  prefixIcon: Icon(Icons.monitor_weight),
                 ),
-                items: const [
-                  DropdownMenuItem(
-                    value: '1',
-                    child: Text('1 unidade (caneta ou seringa 1/1)'),
-                  ),
-                  DropdownMenuItem(
-                    value: '2',
-                    child: Text('2 unidades (seringa 2/2)'),
-                  ),
-                ],
-                onChanged: (v) => setState(() => _escalaDispositivo = v),
-                validator: (v) =>
-                    v == null ? 'Selecione a escala do dispositivo' : null,
+                keyboardType: TextInputType.number,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 30),
               ElevatedButton.icon(
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text('Avançar para Classificação'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    if (_creatininaController.text.isNotEmpty &&
-                        _idadeController.text.isNotEmpty) {
-                      double scr =
-                          double.tryParse(_creatininaController.text) ?? 0;
-                      int idade = int.tryParse(_idadeController.text) ?? 0;
-                      double tfg = calcularTFG(scr, idade, _isMulher);
-                      debugPrint('TFG estimada: ${tfg.toStringAsFixed(2)}');
-                    }
-
-                    Navigator.pushNamed(
-                      context,
-                      '/classificacao',
-                      arguments: {
-                        'nome': _nameController.text,
-                        'peso': _weightController.text,
-                        'corticoide': _isCorticoide,
-                        'escala': _escalaDispositivo,
-                      },
-                    );
-                  }
-                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+                onPressed: _goToNextStep,
               ),
             ],
           ),
         ),
       ),
+      bottomNavigationBar: const NavBar(selectedIndex: 1),
     );
   }
 }

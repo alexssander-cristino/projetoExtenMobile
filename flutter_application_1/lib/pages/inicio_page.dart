@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/navbar.dart';
 
 class InicioPage extends StatelessWidget {
   const InicioPage({super.key});
@@ -24,6 +25,8 @@ class InicioPage extends StatelessWidget {
           ],
         ),
       ),
+      // 👇 adiciona a NavBar no final
+      bottomNavigationBar: const NavBar(selectedIndex: 0),
     );
   }
 }
