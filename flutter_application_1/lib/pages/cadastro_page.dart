@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
-import '../widgets/navbar.dart'; // 👈 importa sua NavBar
+import '../widgets/navbar.dart';
 
 class CadastroPage extends StatefulWidget {
   const CadastroPage({super.key});
