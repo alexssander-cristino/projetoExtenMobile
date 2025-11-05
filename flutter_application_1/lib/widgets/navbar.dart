@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import '../pages/inicio_page.dart';
 import '../pages/cadastro_page.dart';
 import '../pages/classificacao_page.dart';
-import '../pages/protocolo_page.dart';
-import '../pages/prescricao_page.dart';
-import '../pages/acompanhamento_page.dart';
 
 class NavBar extends StatelessWidget {
   final int selectedIndex;
@@ -24,15 +21,6 @@ class NavBar extends StatelessWidget {
       case 2:
         page = const ClassificacaoPage();
         break;
-      case 3:
-        page = const ProtocoloPage();
-        break;
-      case 4:
-        page = const PrescricaoPage();
-        break;
-      case 5:
-        page = const AcompanhamentoPage();
-        break;
       default:
         page = const InicioPage();
     }
@@ -45,39 +33,110 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: selectedIndex,
-      onTap: (index) => _onItemTapped(context, index),
-      type: BottomNavigationBarType.fixed,
-      selectedItemColor: Colors.blueAccent,
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Início',
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.white,
+            Colors.grey[50]!,
+          ],
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_add),
-          label: 'Cadastro',
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.assignment),
-          label: 'Classificação',
+        child: BottomNavigationBar(
+          currentIndex: selectedIndex,
+          onTap: (index) => _onItemTapped(context, index),
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.transparent,
+          selectedItemColor: const Color(0xFF1976D2),
+          unselectedItemColor: Colors.grey[500],
+          showUnselectedLabels: true,
+          selectedFontSize: 12,
+          unselectedFontSize: 10,
+          elevation: 0,
+          selectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            height: 1.5,
+          ),
+          unselectedLabelStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            height: 1.5,
+          ),
+          items: [
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(
+                Icons.home_outlined,
+                Icons.home_rounded,
+                0,
+              ),
+              label: 'Início',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(
+                Icons.person_add_outlined,
+                Icons.person_add_rounded,
+                1,
+              ),
+              label: 'Cadastro',
+            ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(
+                Icons.people_outline,
+                Icons.people_rounded,
+                2,
+              ),
+              label: 'Pacientes',
+            ),
+          ],
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.description),
-          label: 'Protocolo',
+      ),
+    );
+  }
+
+  Widget _buildNavIcon(IconData inactiveIcon, IconData activeIcon, int index) {
+    final isSelected = selectedIndex == index;
+    
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: isSelected 
+            ? const Color(0xFF1976D2).withOpacity(0.1)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        border: isSelected 
+            ? Border.all(
+                color: const Color(0xFF1976D2).withOpacity(0.2),
+                width: 1,
+              )
+            : null,
+      ),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: Icon(
+          isSelected ? activeIcon : inactiveIcon,
+          key: ValueKey(isSelected),
+          size: isSelected ? 26 : 24,
+          color: isSelected 
+              ? const Color(0xFF1976D2)
+              : Colors.grey[500],
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.medical_services),
-          label: 'Prescrição',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.show_chart),
-          label: 'Acompanhamento',
-        ),
-      ],
+      ),
     );
   }
 }
