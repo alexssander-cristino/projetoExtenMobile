@@ -395,4 +395,29 @@ class ApiService {
     _baseUrl = null;
     print('🗑️ URL limpa - será redescoberta na próxima requisição');
   }
+
+  static Future<Map<String, dynamic>?> buscarAlta(int pacienteId) async {
+  try {
+    final response = await _makeRequest('GET', '/altas/$pacienteId');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      if (data is List && data.isNotEmpty) {
+        return data.first;
+      } else if (data is Map<String, dynamic>) {
+        return data;
+      } else {
+        return null;
+      }
+    } else {
+      throw Exception('Erro ao buscar alta (status ${response.statusCode})');
+    }
+  } catch (e) {
+    throw Exception('Falha ao buscar alta: $e');
+  }
 }
+
+}
+
+
+

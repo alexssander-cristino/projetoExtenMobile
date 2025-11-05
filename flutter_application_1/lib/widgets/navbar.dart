@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../pages/inicio_page.dart';
 import '../pages/cadastro_page.dart';
 import '../pages/classificacao_page.dart';
+import '../pages/historico_alta_page.dart';
 
 class NavBar extends StatelessWidget {
   final int selectedIndex;
@@ -20,6 +21,9 @@ class NavBar extends StatelessWidget {
         break;
       case 2:
         page = const ClassificacaoPage();
+        break;
+      case 3:
+        page = const HistoricoAltaPage();
         break;
       default:
         page = const InicioPage();
@@ -48,7 +52,6 @@ class NavBar extends StatelessWidget {
             color: Colors.black.withOpacity(0.08),
             blurRadius: 20,
             offset: const Offset(0, -5),
-            spreadRadius: 0,
           ),
         ],
       ),
@@ -101,6 +104,14 @@ class NavBar extends StatelessWidget {
               ),
               label: 'Pacientes',
             ),
+            BottomNavigationBarItem(
+              icon: _buildNavIcon(
+                Icons.history_outlined,
+                Icons.history_rounded,
+                3,
+              ),
+              label: 'Histórico',
+            ),
           ],
         ),
       ),
@@ -109,17 +120,17 @@ class NavBar extends StatelessWidget {
 
   Widget _buildNavIcon(IconData inactiveIcon, IconData activeIcon, int index) {
     final isSelected = selectedIndex == index;
-    
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isSelected 
+        color: isSelected
             ? const Color(0xFF1976D2).withOpacity(0.1)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        border: isSelected 
+        border: isSelected
             ? Border.all(
                 color: const Color(0xFF1976D2).withOpacity(0.2),
                 width: 1,
@@ -132,7 +143,7 @@ class NavBar extends StatelessWidget {
           isSelected ? activeIcon : inactiveIcon,
           key: ValueKey(isSelected),
           size: isSelected ? 26 : 24,
-          color: isSelected 
+          color: isSelected
               ? const Color(0xFF1976D2)
               : Colors.grey[500],
         ),

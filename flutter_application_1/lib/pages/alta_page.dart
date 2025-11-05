@@ -14,6 +14,7 @@ class _AltaPageState extends State<AltaPage> {
   final _resumoController = TextEditingController();
   bool _isLoading = false;
   bool _altaRegistrada = false;
+  String? _resumoSalvo;
 
   @override
   void didChangeDependencies() {
@@ -24,6 +25,7 @@ class _AltaPageState extends State<AltaPage> {
         setState(() {
           _paciente = args;
         });
+        _carregarAlta();
       }
     }
   }
@@ -32,6 +34,29 @@ class _AltaPageState extends State<AltaPage> {
   void dispose() {
     _resumoController.dispose();
     super.dispose();
+  }
+
+  Future<void> _carregarAlta() async {
+    if (_paciente == null) return;
+
+    try {
+      final dados = await ApiService.buscarAlta(_paciente!['id']);
+      if (dados != null && dados['resumo'] != null) {
+        setState(() {
+          _altaRegistrada = true;
+          _resumoSalvo = dados['resumo'];
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erro ao carregar dados da alta: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _registrarAlta() async {
@@ -57,6 +82,7 @@ class _AltaPageState extends State<AltaPage> {
 
       setState(() {
         _altaRegistrada = true;
+        _resumoSalvo = _resumoController.text.trim();
         _isLoading = false;
       });
 
@@ -83,12 +109,18 @@ class _AltaPageState extends State<AltaPage> {
 
   String _getNomeCenario(int cenario) {
     switch (cenario) {
-      case 1: return 'Não crítico';
-      case 2: return 'Gestante';
-      case 3: return 'Crítico';
-      case 4: return 'Paliativo';
-      case 5: return 'Perioperatório';
-      default: return 'Não definido';
+      case 1:
+        return 'Não crítico';
+      case 2:
+        return 'Gestante';
+      case 3:
+        return 'Crítico';
+      case 4:
+        return 'Paliativo';
+      case 5:
+        return 'Perioperatório';
+      default:
+        return 'Não definido';
     }
   }
 
@@ -141,7 +173,6 @@ class _AltaPageState extends State<AltaPage> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Status da alta
             Icon(
               _altaRegistrada ? Icons.check_circle : Icons.assignment_turned_in,
               color: _altaRegistrada ? Colors.green : Colors.orange,
@@ -150,7 +181,8 @@ class _AltaPageState extends State<AltaPage> {
             const SizedBox(height: 20),
             Text(
               _altaRegistrada ? 'Alta Registrada' : 'Registrar Alta',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
 
@@ -163,21 +195,33 @@ class _AltaPageState extends State<AltaPage> {
                   children: [
                     Text(
                       'Resumo do Atendimento',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: const Color(0xFF1976D2),
-                      ),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: const Color(0xFF1976D2),
+                          ),
                     ),
                     const SizedBox(height: 12),
-                    _buildResumoItem('Paciente', _paciente!['nome'] ?? 'Não informado'),
-                    _buildResumoItem('Idade/Sexo', '${_paciente!['idade']} anos • ${_paciente!['sexo'] == 'F' ? 'Feminino' : 'Masculino'}'),
+                    _buildResumoItem(
+                        'Paciente', _paciente!['nome'] ?? 'Não informado'),
+                    _buildResumoItem(
+                        'Idade/Sexo',
+                        '${_paciente!['idade']} anos • ${_paciente!['sexo'] == 'F' ? 'Feminino' : 'Masculino'}'),
                     _buildResumoItem('Peso', '${_paciente!['peso']} kg'),
                     if (_paciente!['imc'] != null)
-                      _buildResumoItem('IMC', '${_paciente!['imc']?.toStringAsFixed(1)} kg/m²'),
+                      _buildResumoItem(
+                          'IMC',
+                          '${_paciente!['imc']?.toStringAsFixed(1)} kg/m²'),
                     if (_paciente!['egfr'] != null)
-                      _buildResumoItem('TFG', '${_paciente!['egfr']?.toStringAsFixed(0)} mL/min/1,73m²'),
-                    _buildResumoItem('Local', _paciente!['local_internacao'] ?? 'Não informado'),
-                    _buildResumoItem('Cenário', _getNomeCenario(_paciente!['cenario'])),
+                      _buildResumoItem(
+                          'TFG',
+                          '${_paciente!['egfr']?.toStringAsFixed(0)} mL/min/1,73m²'),
+                    _buildResumoItem('Local',
+                        _paciente!['local_internacao'] ?? 'Não informado'),
+                    _buildResumoItem(
+                        'Cenário', _getNomeCenario(_paciente!['cenario'])),
                   ],
                 ),
               ),
@@ -205,7 +249,8 @@ class _AltaPageState extends State<AltaPage> {
                         controller: _resumoController,
                         maxLines: 6,
                         decoration: InputDecoration(
-                          hintText: 'Descreva:\n• Condições de alta\n• Medicações prescritas\n• Orientações ao paciente\n• Follow-up necessário',
+                          hintText:
+                              'Descreva:\n• Condições de alta\n• Medicações prescritas\n• Orientações ao paciente\n• Follow-up necessário',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -225,11 +270,14 @@ class _AltaPageState extends State<AltaPage> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor:
+                                        AlwaysStoppedAnimation<Color>(
+                                            Colors.white),
                                   ),
                                 )
                               : const Icon(Icons.save),
-                          label: Text(_isLoading ? 'Salvando...' : 'Registrar Alta'),
+                          label: Text(
+                              _isLoading ? 'Salvando...' : 'Registrar Alta'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                             foregroundColor: Colors.white,
@@ -247,15 +295,16 @@ class _AltaPageState extends State<AltaPage> {
               // Alta já registrada
               Card(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16), // ✅ correção aqui
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        children: [
-                          Icon(Icons.check_circle, color: Colors.green, size: 24),
-                          const SizedBox(width: 8),
-                          const Text(
+                        children: const [
+                          Icon(Icons.check_circle,
+                              color: Colors.green, size: 24),
+                          SizedBox(width: 8),
+                          Text(
                             'Atendimento Finalizado',
                             style: TextStyle(
                               fontSize: 18,
@@ -277,7 +326,7 @@ class _AltaPageState extends State<AltaPage> {
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey[300]!),
+                          border: Border.all(color: Colors.grey),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,7 +336,7 @@ class _AltaPageState extends State<AltaPage> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
-                            Text(_resumoController.text),
+                            Text(_resumoSalvo ?? 'Sem resumo disponível'),
                           ],
                         ),
                       ),
@@ -296,56 +345,11 @@ class _AltaPageState extends State<AltaPage> {
                 ),
               ),
             ],
-
-            const SizedBox(height: 30),
-
-            // Botões de navegação
-            Row(
-              children: [
-                if (!_altaRegistrada) ...[
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => Navigator.pushNamed(
-                        context,
-                        '/acompanhamento',
-                        arguments: _paciente,
-                      ),
-                      icon: const Icon(Icons.timeline),
-                      label: const Text('Acompanhamento'),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.home),
-                    label: const Text('Voltar ao Início'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1976D2),
-                      foregroundColor: Colors.white,
-                      minimumSize: const Size(0, 50),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      '/inicio',
-                      (_) => false,
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
+      bottomNavigationBar: NavBar(selectedIndex: 3),
+
     );
   }
 }

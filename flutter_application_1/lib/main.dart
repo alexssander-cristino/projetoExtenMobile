@@ -6,16 +6,20 @@ import 'pages/protocolo_page.dart';
 import 'pages/prescricao_page.dart';
 import 'pages/acompanhamento_page.dart';
 import 'pages/alta_page.dart';
+import 'pages/historico_alta_page.dart';
 
 void main() {
-  runApp(InsulinPrescriberApp());
+  runApp(const InsulinPrescriberApp());
 }
 
 class InsulinPrescriberApp extends StatelessWidget {
+  const InsulinPrescriberApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Insulin Prescriber',
+      debugShowCheckedModeBanner: false,
+      title: 'InsulinCare',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
@@ -29,6 +33,7 @@ class InsulinPrescriberApp extends StatelessWidget {
         '/prescricao': (_) => const PrescricaoPage(),
         '/acompanhamento': (_) => const AcompanhamentoPage(),
         '/alta': (_) => const AltaPage(),
+        '/historico_alta': (_) => const HistoricoAltaPage(),
       },
     );
   }

@@ -491,6 +491,25 @@ def listar_altas(paciente_id):
         print_error(f"Erro ao listar altas: {str(e)}")
         return jsonify({'error': 'Erro interno'}), 500
 
+# 🔹 NOVA ROTA: listar TODAS as altas do banco
+@app.route('/altas', methods=['POST'])
+def listar_todas_altas():
+    try:
+        altas = db.session.query(Alta, Paciente.nome).join(Paciente, Alta.paciente_id == Paciente.id).all()
+        resultado = [{
+            'id': alta.Alta.id,
+            'nome_paciente': alta.nome,
+            'resumo': alta.Alta.resumo,
+            'data_alta': alta.Alta.data_alta.isoformat() if alta.Alta.data_alta else None
+        } for alta in altas]
+
+        return jsonify(resultado)
+    except Exception as e:
+        print("Erro ao listar todas as altas:", str(e))
+        print(traceback.format_exc())
+        return jsonify({'error': 'Erro ao buscar altas'}), 500
+
+
 # ===============================
 # HANDLERS DE ERRO
 # ===============================
