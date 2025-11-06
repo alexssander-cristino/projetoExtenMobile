@@ -302,7 +302,7 @@ class ApiService {
   // ===============================
   // MÉTODOS DE ALTA
   // ===============================
-  
+
   static Future<Map<String, dynamic>> registrarAlta(Map<String, dynamic> data) async {
     try {
       final response = await _makeRequest('POST', '/altas', data: data);
@@ -317,15 +317,17 @@ class ApiService {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> listarAltas(int pacienteId) async {
+  // Unificando listarAltas com parâmetro opcional
+  static Future<List<Map<String, dynamic>>> listarAltas([int? pacienteId]) async {
     try {
-      final response = await _makeRequest('GET', '/altas/$pacienteId');
+      final endpoint = (pacienteId != null && pacienteId > 0) ? '/altas/$pacienteId' : '/altas';
+      final response = await _makeRequest('GET', endpoint);
       
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
+        final List<dynamic> data = jsonDecode(response.body);
         return data.cast<Map<String, dynamic>>();
       } else {
-        throw Exception('Erro ao listar altas');
+        throw Exception('Erro ao listar altas (status ${response.statusCode})');
       }
     } catch (e) {
       throw Exception('Falha ao carregar altas: $e');
